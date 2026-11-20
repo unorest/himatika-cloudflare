@@ -1,0 +1,12 @@
+{
+  "name": "himatika-cloudflare",
+  "version": "1.0.0",
+  "description": "HIMATIKA Monorepo — Cloudflare Workers & Pages",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix himatika-worker",
+    "dev:worker": "npm run dev --prefix himatika-worker",
+    "dev:frontend": "npx serve himatika-frontend/public -p 3000",
+    "install:all": "npm install --prefix himatika-worker && npm install --prefix himatika-frontend"
+  }
+}
