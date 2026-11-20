@@ -1,0 +1,97 @@
+<!-- ============================================================
+     navbar-public.html — Navbar publik HIMATIKA
+     Requires: Alpine.js, Tailwind CSS
+     Usage: copy/paste atau include via fetch + innerHTML
+     ============================================================ -->
+<nav
+  x-data="{ open: false }"
+  class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="/index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">H</span>
+        </div>
+        <span class="text-xl font-extrabold text-blue-700 tracking-tight">HIMATIKA</span>
+      </a>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center gap-1">
+        <a href="/index.html"
+           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+          Beranda
+        </a>
+        <a href="/blog/index.html"
+           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+          Blog
+        </a>
+        <a href="/event/index.html"
+           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+          Event
+        </a>
+        <a href="/forum/index.html"
+           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+          Forum
+        </a>
+        <a href="/admin/login.html"
+           class="ml-3 px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
+          Login Admin
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button
+        @click="open = !open"
+        class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition"
+        aria-label="Toggle menu"
+      >
+        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 -translate-y-2"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 -translate-y-2"
+    class="md:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-2 flex flex-col gap-1"
+  >
+    <a href="/index.html"
+       class="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+      Beranda
+    </a>
+    <a href="/blog/index.html"
+       class="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+      Blog
+    </a>
+    <a href="/event/index.html"
+       class="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+      Event
+    </a>
+    <a href="/forum/index.html"
+       class="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+      Forum
+    </a>
+    <a href="/admin/login.html"
+       class="mt-1 block px-4 py-3 rounded-lg text-sm font-semibold bg-blue-600 text-white text-center hover:bg-blue-700 transition">
+      Login Admin
+    </a>
+  </div>
+</nav>

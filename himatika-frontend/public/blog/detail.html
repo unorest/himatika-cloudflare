@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id" x-data="blogDetail()" x-init="init()">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title x-text="post ? post.title + ' - HIMATIKA' : 'Artikel - HIMATIKA'">Artikel - HIMATIKA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/js/api.js"></script>
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    .prose-content h1, .prose-content h2, .prose-content h3 { font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; }
+    .prose-content h1 { font-size: 1.75rem; }
+    .prose-content h2 { font-size: 1.4rem; }
+    .prose-content h3 { font-size: 1.15rem; }
+    .prose-content p { margin-bottom: 1em; line-height: 1.8; color: #374151; }
+    .prose-content ul, .prose-content ol { padding-left: 1.5em; margin-bottom: 1em; }
+    .prose-content li { margin-bottom: 0.4em; }
+    .prose-content img { border-radius: 0.5rem; max-width: 100%; margin: 1em 0; }
+    .prose-content a { color: #2563eb; text-decoration: underline; }
+    .prose-content blockquote { border-left: 4px solid #3b82f6; padding-left: 1em; color: #6b7280; font-style: italic; margin: 1em 0; }
+    .prose-content pre { background: #1e293b; color: #e2e8f0; padding: 1em; border-radius: 0.5rem; overflow-x: auto; margin: 1em 0; font-size: 0.875rem; }
+    .prose-content code { background: #f1f5f9; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.875em; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="/" class="text-2xl font-bold text-blue-700 tracking-tight">HIMATIKA</a>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-gray-600 hover:text-blue-700 transition">Beranda</a>
+          <a href="/blog/" class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-0.5">Blog</a>
+          <a href="/event/" class="text-gray-600 hover:text-blue-700 transition">Event</a>
+          <a href="/forum/" class="text-gray-600 hover:text-blue-700 transition">Forum</a>
+        </div>
+        <button @click="open = !open" class="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div x-show="open" x-transition class="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-2">
+      <a href="/" class="block text-gray-700 py-1">Beranda</a>
+      <a href="/blog/" class="block text-blue-700 font-semibold py-1">Blog</a>
+      <a href="/event/" class="block text-gray-700 py-1">Event</a>
+      <a href="/forum/" class="block text-gray-700 py-1">Forum</a>
+    </div>
+  </nav>
+
+  <!-- LOADING STATE -->
+  <div x-show="loading" class="max-w-3xl mx-auto px-4 py-16">
+    <div class="animate-pulse space-y-4">
+      <div class="h-8 bg-gray-200 rounded w-3/4"></div>
+      <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+      <div class="h-64 bg-gray-200 rounded"></div>
+      <div class="space-y-2">
+        <div class="h-4 bg-gray-200 rounded"></div>
+        <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+        <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+        <div class="h-4 bg-gray-200 rounded w-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div x-show="!loading && error" class="max-w-3xl mx-auto px-4 py-24 text-center">
+    <svg class="w-16 h-16 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    <h2 class="text-xl font-semibold text-gray-700 mb-2">Artikel tidak ditemukan</h2>
+    <p class="text-gray-400 mb-6" x-text="error"></p>
+    <a href="/blog/" class="text-blue-600 hover:underline">← Kembali ke Blog</a>
+  </div>
+
+  <!-- ARTICLE CONTENT -->
+  <main x-show="!loading && post" class="max-w-3xl mx-auto px-4 py-12">
+    <!-- Breadcrumb -->
+    <div class="text-sm text-gray-400 mb-6 flex items-center gap-2">
+      <a href="/" class="hover:text-blue-600">Beranda</a>
+      <span>/</span>
+      <a href="/blog/" class="hover:text-blue-600">Blog</a>
+      <span>/</span>
+      <span class="text-gray-600 truncate max-w-xs" x-text="post?.title || ''"></span>
+    </div>
+
+    <!-- Category Badge -->
+    <div class="mb-4">
+      <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full" x-text="post?.category || 'Artikel'"></span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-6" x-text="post?.title"></h1>
+
+    <!-- Meta -->
+    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-8 pb-6 border-b border-gray-200">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold" x-text="authorInitials()"></div>
+        <span x-text="post?.author || post?.author_name || 'Admin'"></span>
+      </div>
+      <span>·</span>
+      <span x-text="formatDate(post?.created_at || post?.published_at)"></span>
+      <span>·</span>
+      <span x-text="readTime() + ' menit baca'"></span>
+    </div>
+
+    <!-- Thumbnail Hero -->
+    <template x-if="post?.thumbnail">
+      <img :src="post.thumbnail" :alt="post.title" class="w-full rounded-xl shadow mb-8 max-h-80 object-cover">
+    </template>
+    <template x-if="!post?.thumbnail">
+      <div class="w-full rounded-xl mb-8 h-48 flex items-center justify-center text-white text-4xl font-bold"
+        :style="gradientFor(post?.id)" x-text="initials(post?.title)">
+      </div>
+    </template>
+
+    <!-- Article Body -->
+    <div class="prose-content text-gray-700 leading-relaxed" x-html="post?.body || post?.content || '<p>Konten tidak tersedia.</p>'"></div>
+
+    <!-- Tags -->
+    <div x-show="post?.tags && post.tags.length > 0" class="mt-10 pt-6 border-t border-gray-200">
+      <h3 class="text-sm font-semibold text-gray-500 mb-3">Tags:</h3>
+      <div class="flex flex-wrap gap-2">
+        <template x-for="tag in (post?.tags || [])" :key="tag">
+          <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full" x-text="tag"></span>
+        </template>
+      </div>
+    </div>
+
+    <!-- Back Link -->
+    <div class="mt-10">
+      <a href="/blog/" class="inline-flex items-center gap-2 text-blue-600 hover:underline font-medium">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Kembali ke Blog
+      </a>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-blue-200 text-sm">
+      © <span x-text="new Date().getFullYear()"></span> HIMATIKA — Himpunan Mahasiswa Matematika
+    </div>
+  </footer>
+
+  <script>
+    function blogDetail() {
+      return {
+        post: null,
+        loading: true,
+        error: null,
+
+        async init() {
+          const slug = new URLSearchParams(location.search).get('slug');
+          if (!slug) {
+            this.error = 'Slug artikel tidak ditemukan di URL.';
+            this.loading = false;
+            return;
+          }
+          try {
+            const data = await api.get(`/blog/${slug}`);
+            this.post = data.data || data.post || data;
+          } catch(e) {
+            this.error = e?.message || 'Artikel tidak ditemukan atau terjadi kesalahan.';
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        formatDate(str) {
+          if (!str) return '';
+          return new Date(str).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        },
+
+        readTime() {
+          const body = this.post?.body || this.post?.content || '';
+          const words = body.replace(/<[^>]+>/g, '').split(/\s+/).length;
+          return Math.max(1, Math.round(words / 200));
+        },
+
+        authorInitials() {
+          const name = this.post?.author || this.post?.author_name || 'A';
+          return name.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+        },
+
+        gradientFor(id) {
+          const g = [
+            'background:linear-gradient(135deg,#667eea,#764ba2)',
+            'background:linear-gradient(135deg,#f093fb,#f5576c)',
+            'background:linear-gradient(135deg,#4facfe,#00f2fe)',
+          ];
+          return g[(id || 0) % g.length];
+        },
+
+        initials(title) {
+          if (!title) return '?';
+          return title.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+        },
+      };
+    }
+  </script>
+</body>
+</html>

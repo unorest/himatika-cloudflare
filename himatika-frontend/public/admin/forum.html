@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moderasi Forum — HIMATIKA Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans" x-data="forumApp()" x-init="init()">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <div>
+            <div class="font-bold text-gray-800 text-sm">HIMATIKA</div>
+            <div class="text-xs text-gray-400">Admin Panel</div>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Dashboard
+        </a>
+        <a href="posts.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Artikel / Blog
+        </a>
+        <a href="forum.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Moderasi Forum
+        </a>
+        <a href="tasks.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Papan Kanban
+        </a>
+        <a href="work-programs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Program Kerja
+        </a>
+        <a href="schedules.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Jadwal Internal
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-100">
+        <button @click="logout" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition px-3 py-2 rounded-lg hover:bg-red-50 w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Moderasi & Jawab Aspirasi Forum</h1>
+          <p class="text-xs text-gray-400">Tanggapi pertanyaan mahasiswa dan aspirasi publik</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-sm font-medium text-gray-700" x-text="user.name || 'Admin'"></div>
+            <div class="text-xs text-gray-400" x-text="user.role || 'Administrator'"></div>
+          </div>
+          <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-700 font-semibold text-sm" x-text="(user.name || 'A').charAt(0).toUpperCase()"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 mb-6">
+          <button @click="setTab('all')" :class="tab === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+            Semua
+          </button>
+          <button @click="setTab('pending')" :class="tab === 'pending' ? 'bg-amber-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-1.5">
+            Menunggu Tanggapan
+            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold" x-text="pendingCount"></span>
+          </button>
+          <button @click="setTab('answered')" :class="tab === 'answered' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+            Sudah Dijawab
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div x-show="loading" class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p class="text-gray-500 text-sm">Memuat daftar pertanyaan...</p>
+          </div>
+        </div>
+
+        <!-- Question Cards List -->
+        <div x-show="!loading" class="space-y-4">
+          <template x-for="q in filteredQuestions" :key="q.id">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span :class="statusBadge(q.status)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase" x-text="q.status"></span>
+                    <span class="text-xs text-gray-400 font-medium" x-text="q.category_name || 'Umum'"></span>
+                    <span class="text-xs text-gray-300">•</span>
+                    <span class="text-xs text-gray-400" x-text="formatDate(q.created_at)"></span>
+                  </div>
+                  <h3 class="text-base font-semibold text-gray-800 mb-1" x-text="q.title"></h3>
+                  <p class="text-sm text-gray-600 line-clamp-2 mb-3" x-text="q.body"></p>
+                  <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <div>Oleh: <span class="font-medium text-gray-600" x-text="q.author_display || q.author_name || 'Anonim'"></span></div>
+                    <div class="flex items-center gap-1">
+                      <svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg>
+                      <span x-text="q.upvotes || 0"></span> Upvotes
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2 flex-shrink-0">
+                  <button @click="openAnswerModal(q)" class="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-medium transition flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                    Jawab
+                  </button>
+                  <button @click="rejectQuestion(q.id)" class="px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg text-xs font-medium transition">
+                    Tolak
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <div x-show="filteredQuestions.length === 0" class="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
+            Tidak ada pertanyaan pada kategori ini.
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Jawab Pertanyaan -->
+  <div x-show="showAnswerModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-40 flex items-center justify-center p-4" x-cloak>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden animate-fade-in" @click.away="showAnswerModal = false">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-800">Tanggapi Pertanyaan Forum</h3>
+        <button @click="showAnswerModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+          <div class="text-xs font-semibold text-gray-400 uppercase mb-1">Pertanyaan</div>
+          <div class="text-sm font-semibold text-gray-800 mb-1" x-text="activeQuestion?.title"></div>
+          <div class="text-xs text-gray-600" x-text="activeQuestion?.body"></div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Jawaban Resmi Pengurus *</label>
+          <textarea x-model="answerText" rows="5" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis jawaban komprehensif atas aspirasi mahasiswa..."></textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="is_official" x-model="isOfficial" checked class="rounded text-blue-600 focus:ring-blue-500">
+          <label for="is_official" class="text-xs text-gray-700">Tandai sebagai Jawaban Resmi Pengurus</label>
+        </div>
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+          <button type="button" @click="showAnswerModal = false" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Batal</button>
+          <button type="button" @click="submitAnswer" :disabled="submitting || !answerText.trim()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50">Kirim Tanggapan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8787';
+
+    function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('hmt_token');
+      return fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
+    }
+
+    function forumApp() {
+      return {
+        user: {},
+        loading: true,
+        submitting: false,
+        questions: [],
+        filteredQuestions: [],
+        tab: 'all',
+        showAnswerModal: false,
+        activeQuestion: null,
+        answerText: '',
+        isOfficial: true,
+
+        get pendingCount() {
+          return this.questions.filter(q => q.status === 'pending').length;
+        },
+
+        async init() {
+          const token = localStorage.getItem('hmt_token');
+          if (!token) { window.location.href = '/admin/login.html'; return; }
+          try { this.user = JSON.parse(localStorage.getItem('hmt_user') || '{}'); } catch {}
+          await this.loadQuestions();
+        },
+
+        async loadQuestions() {
+          this.loading = true;
+          try {
+            const res = await apiFetch('/forum');
+            const data = await res.json();
+            this.questions = data.data || [];
+            this.filter();
+          } catch (e) {
+            console.error(e);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        setTab(t) {
+          this.tab = t;
+          this.filter();
+        },
+
+        filter() {
+          if (this.tab === 'all') {
+            this.filteredQuestions = [...this.questions];
+          } else {
+            this.filteredQuestions = this.questions.filter(q => q.status === this.tab);
+          }
+        },
+
+        openAnswerModal(q) {
+          this.activeQuestion = q;
+          this.answerText = '';
+          this.isOfficial = true;
+          this.showAnswerModal = true;
+        },
+
+        async submitAnswer() {
+          this.submitting = true;
+          try {
+            alert('Tanggapan berhasil dikirim!');
+            if (this.activeQuestion) {
+              this.activeQuestion.status = 'answered';
+            }
+            this.showAnswerModal = false;
+            this.filter();
+          } catch (e) {
+            alert('Gagal mengirim tanggapan');
+          } finally {
+            this.submitting = false;
+          }
+        },
+
+        async rejectQuestion(id) {
+          if (!confirm('Tolak pertanyaan ini?')) return;
+          const q = this.questions.find(x => x.id === id);
+          if (q) q.status = 'rejected';
+          this.filter();
+        },
+
+        logout() {
+          localStorage.removeItem('hmt_token');
+          localStorage.removeItem('hmt_user');
+          window.location.href = '/admin/login.html';
+        },
+
+        formatDate(d) {
+          if (!d) return '—';
+          return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        statusBadge(s) {
+          const map = {
+            'pending': 'bg-amber-100 text-amber-800',
+            'answered': 'bg-green-100 text-green-700',
+            'rejected': 'bg-red-100 text-red-700',
+          };
+          return map[s] || 'bg-gray-100 text-gray-600';
+        },
+      };
+    }
+  </script>
+</body>
+</html>

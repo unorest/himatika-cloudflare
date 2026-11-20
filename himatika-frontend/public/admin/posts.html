@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Artikel — HIMATIKA Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans" x-data="postsApp()" x-init="init()">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <div>
+            <div class="font-bold text-gray-800 text-sm">HIMATIKA</div>
+            <div class="text-xs text-gray-400">Admin Panel</div>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Dashboard
+        </a>
+        <a href="posts.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Artikel / Blog
+        </a>
+        <a href="forum.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Moderasi Forum
+        </a>
+        <a href="tasks.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Papan Kanban
+        </a>
+        <a href="work-programs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Program Kerja
+        </a>
+        <a href="schedules.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Jadwal Internal
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-100">
+        <button @click="logout" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition px-3 py-2 rounded-lg hover:bg-red-50 w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Kelola Artikel & Berita</h1>
+          <p class="text-xs text-gray-400">Publikasikan dan atur konten blog HIMATIKA</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button @click="openCreateModal" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Tulis Artikel
+          </button>
+          <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-700 font-semibold text-sm" x-text="(user.name || 'A').charAt(0).toUpperCase()"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Filter & Search Bar -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-semibold text-gray-500 uppercase">Filter:</span>
+            <select x-model="filterStatus" @change="filterPosts" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all">Semua Status</option>
+              <option value="published">Diterbitkan</option>
+              <option value="draft">Draft</option>
+              <option value="archived">Diarsipkan</option>
+            </select>
+          </div>
+          <div class="relative w-72">
+            <input type="text" x-model="searchQuery" @input="filterPosts" placeholder="Cari judul artikel..." class="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div x-show="loading" class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p class="text-gray-500 text-sm">Memuat artikel...</p>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div x-show="!loading" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase">
+                <tr>
+                  <th class="px-6 py-3.5">Judul Artikel</th>
+                  <th class="px-6 py-3.5">Kategori</th>
+                  <th class="px-6 py-3.5">Penulis</th>
+                  <th class="px-6 py-3.5">Status</th>
+                  <th class="px-6 py-3.5 text-center">Tayangan</th>
+                  <th class="px-6 py-3.5">Tanggal</th>
+                  <th class="px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <template x-for="post in filteredPosts" :key="post.id">
+                  <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                      <div class="font-medium text-gray-800" x-text="post.title"></div>
+                      <div class="text-xs text-gray-400" x-text="'/' + post.slug"></div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-medium" :style="`background-color: ${post.category_color ? post.category_color + '20' : '#E5E7EB'}; color: ${post.category_color || '#374151'}`" x-text="post.category_name || 'Umum'"></span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600" x-text="post.author_name || 'Admin'"></td>
+                    <td class="px-6 py-4">
+                      <span :class="statusBadge(post.status)" class="px-2.5 py-1 rounded-full text-xs font-medium uppercase" x-text="post.status"></span>
+                    </td>
+                    <td class="px-6 py-4 text-center text-gray-500 font-mono text-xs" x-text="post.views || 0"></td>
+                    <td class="px-6 py-4 text-gray-500 text-xs" x-text="formatDate(post.published_at || post.created_at)"></td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                      <button @click="editPost(post)" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Edit</button>
+                      <button @click="deletePost(post.id)" class="text-red-500 hover:text-red-700 text-xs font-medium">Hapus</button>
+                    </td>
+                  </tr>
+                </template>
+                <tr x-show="filteredPosts.length === 0">
+                  <td colspan="7" class="px-6 py-10 text-center text-gray-400">Tidak ada artikel ditemukan.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Tulis/Edit Artikel -->
+  <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-40 flex items-center justify-center p-4" x-cloak>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-fade-in" @click.away="showModal = false">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-800" x-text="isEdit ? 'Edit Artikel' : 'Tulis Artikel Baru'"></h3>
+        <button @click="showModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <form @submit.prevent="savePost" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Judul Artikel *</label>
+          <input type="text" x-model="form.title" @input="generateSlug" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Pembukaan Open Recruitment Pengurus">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Slug URL</label>
+          <input type="text" x-model="form.slug" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-600" placeholder="pembukaan-open-recruitment">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Status Publikasi</label>
+            <select x-model="form.status" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="draft">Draft (Disimpan)</option>
+              <option value="published">Published (Terbit)</option>
+              <option value="archived">Archived (Arsip)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Thumbnail URL</label>
+            <input type="text" x-model="form.thumbnail" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Ringkasan (Excerpt)</label>
+          <textarea x-model="form.excerpt" rows="2" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ringkasan singkat artikel..."></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Isi Artikel *</label>
+          <textarea x-model="form.body" rows="6" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs" placeholder="Tulis konten artikel di sini (mendukung HTML)..."></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+          <button type="button" @click="showModal = false" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Batal</button>
+          <button type="submit" :disabled="saving" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50" x-text="saving ? 'Menyimpan...' : 'Simpan Artikel'"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8787';
+
+    function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('hmt_token');
+      return fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
+    }
+
+    function postsApp() {
+      return {
+        user: {},
+        loading: true,
+        saving: false,
+        posts: [],
+        filteredPosts: [],
+        filterStatus: 'all',
+        searchQuery: '',
+        showModal: false,
+        isEdit: false,
+        form: { id: null, title: '', slug: '', status: 'draft', excerpt: '', body: '', thumbnail: '' },
+
+        async init() {
+          const token = localStorage.getItem('hmt_token');
+          if (!token) { window.location.href = '/admin/login.html'; return; }
+          try { this.user = JSON.parse(localStorage.getItem('hmt_user') || '{}'); } catch {}
+          await this.loadPosts();
+        },
+
+        async loadPosts() {
+          this.loading = true;
+          try {
+            const res = await apiFetch('/blog?per_page=50');
+            const data = await res.json();
+            this.posts = data.data || [];
+            this.filterPosts();
+          } catch (e) {
+            console.error(e);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        filterPosts() {
+          this.filteredPosts = this.posts.filter(p => {
+            const matchStatus = this.filterStatus === 'all' || p.status === this.filterStatus;
+            const matchSearch = !this.searchQuery || p.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            return matchStatus && matchSearch;
+          });
+        },
+
+        generateSlug() {
+          if (!this.isEdit) {
+            this.form.slug = this.form.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
+          }
+        },
+
+        openCreateModal() {
+          this.isEdit = false;
+          this.form = { id: null, title: '', slug: '', status: 'draft', excerpt: '', body: '', thumbnail: '' };
+          this.showModal = true;
+        },
+
+        editPost(post) {
+          this.isEdit = true;
+          this.form = { ...post };
+          this.showModal = true;
+        },
+
+        async savePost() {
+          this.saving = true;
+          try {
+            alert('Artikel berhasil disimpan (mode mock/demo)');
+            this.showModal = false;
+            await this.loadPosts();
+          } catch (e) {
+            alert('Gagal menyimpan artikel');
+          } finally {
+            this.saving = false;
+          }
+        },
+
+        async deletePost(id) {
+          if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+          this.posts = this.posts.filter(p => p.id !== id);
+          this.filterPosts();
+        },
+
+        logout() {
+          localStorage.removeItem('hmt_token');
+          localStorage.removeItem('hmt_user');
+          window.location.href = '/admin/login.html';
+        },
+
+        formatDate(d) {
+          if (!d) return '—';
+          return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        statusBadge(s) {
+          const map = {
+            'published': 'bg-green-100 text-green-700',
+            'draft': 'bg-yellow-100 text-yellow-700',
+            'archived': 'bg-gray-100 text-gray-600',
+          };
+          return map[s] || 'bg-gray-100 text-gray-600';
+        },
+      };
+    }
+  </script>
+</body>
+</html>

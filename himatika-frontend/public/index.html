@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id" x-data="beranda()" x-init="init()">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beranda - HIMATIKA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/js/api.js"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="/" class="text-2xl font-bold text-blue-700 tracking-tight">HIMATIKA</a>
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-0.5">Beranda</a>
+          <a href="/blog/" class="text-gray-600 hover:text-blue-700 transition">Blog</a>
+          <a href="/event/" class="text-gray-600 hover:text-blue-700 transition">Event</a>
+          <a href="/forum/" class="text-gray-600 hover:text-blue-700 transition">Forum</a>
+        </div>
+        <!-- Mobile Hamburger -->
+        <button @click="open = !open" class="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div x-show="open" x-transition class="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-2">
+      <a href="/" class="block text-blue-700 font-semibold py-1">Beranda</a>
+      <a href="/blog/" class="block text-gray-700 hover:text-blue-700 py-1">Blog</a>
+      <a href="/event/" class="block text-gray-700 hover:text-blue-700 py-1">Event</a>
+      <a href="/forum/" class="block text-gray-700 hover:text-blue-700 py-1">Forum</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 text-white py-24 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">HIMATIKA</h1>
+      <p class="text-xl md:text-2xl font-light mb-2">Himpunan Mahasiswa Matematika</p>
+      <p class="text-blue-200 mb-10 text-base md:text-lg">Bersama membangun komunitas akademik yang inovatif, inklusif, dan berprestasi.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/blog/" class="bg-white text-blue-700 font-bold px-8 py-3 rounded-full shadow hover:bg-blue-50 transition text-lg">Lihat Blog</a>
+        <a href="/event/" class="border-2 border-white text-white font-bold px-8 py-3 rounded-full hover:bg-white hover:text-blue-700 transition text-lg">Ikuti Event</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENT MENDATANG -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-gray-800">📅 Event Mendatang</h2>
+      <a href="/event/" class="text-blue-600 hover:underline font-medium text-sm">Lihat semua →</a>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div x-show="loadingEvents" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <template x-for="i in 3" :key="i">
+        <div class="bg-white rounded-xl shadow p-5 animate-pulse">
+          <div class="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
+          <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+          <div class="h-6 bg-gray-200 rounded w-20"></div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Event Cards -->
+    <div x-show="!loadingEvents" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <template x-if="events.length === 0">
+        <p class="col-span-3 text-center text-gray-400 py-8">Belum ada event mendatang.</p>
+      </template>
+      <template x-for="ev in events.slice(0,3)" :key="ev.id">
+        <div class="bg-white rounded-xl shadow hover:shadow-md transition p-5 flex flex-col gap-2">
+          <span class="text-xs text-blue-600 font-semibold uppercase tracking-wide" x-text="formatDate(ev.start_date || ev.date)"></span>
+          <h3 class="font-bold text-gray-800 text-lg leading-snug" x-text="ev.title || ev.name"></h3>
+          <p class="text-gray-500 text-sm flex items-center gap-1">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span x-text="ev.location || 'TBA'"></span>
+          </p>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full" x-text="ev.division || ev.divisi || 'Umum'"></span>
+            <a :href="`/event/daftar.html?slug=${ev.slug}`" x-show="ev.allow_registration" class="text-sm text-blue-600 font-medium hover:underline">Daftar →</a>
+          </div>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- ARTIKEL TERBARU -->
+  <section class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-gray-800">📝 Artikel Terbaru</h2>
+        <a href="/blog/" class="text-blue-600 hover:underline font-medium text-sm">Lihat semua →</a>
+      </div>
+
+      <!-- Loading Skeleton -->
+      <div x-show="loadingPosts" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <template x-for="i in 3" :key="i">
+          <div class="bg-gray-50 rounded-xl shadow p-0 overflow-hidden animate-pulse">
+            <div class="h-40 bg-gray-200"></div>
+            <div class="p-5">
+              <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Blog Cards -->
+      <div x-show="!loadingPosts" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <template x-if="posts.length === 0">
+          <p class="col-span-3 text-center text-gray-400 py-8">Belum ada artikel.</p>
+        </template>
+        <template x-for="post in posts.slice(0,3)" :key="post.id">
+          <a :href="`/blog/detail.html?slug=${post.slug}`" class="bg-gray-50 rounded-xl shadow hover:shadow-md transition overflow-hidden flex flex-col group">
+            <!-- Thumbnail -->
+            <div class="h-40 flex items-center justify-center text-white font-bold text-xl"
+              :style="post.thumbnail ? `background:url(${post.thumbnail}) center/cover` : gradientFor(post.id)">
+              <span x-show="!post.thumbnail" x-text="initials(post.title)"></span>
+            </div>
+            <div class="p-5 flex flex-col flex-1 gap-1">
+              <span class="text-xs text-blue-600 font-semibold uppercase" x-text="post.category || 'Artikel'"></span>
+              <h3 class="font-bold text-gray-800 group-hover:text-blue-700 transition leading-snug" x-text="post.title"></h3>
+              <p class="text-gray-500 text-sm mt-1 line-clamp-2" x-text="post.excerpt || ''"></p>
+              <div class="mt-auto pt-3 flex items-center justify-between text-xs text-gray-400">
+                <span x-text="post.author || post.author_name || 'Admin'"></span>
+                <span x-text="formatDate(post.created_at || post.published_at)"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORUM TERBARU -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-gray-800">💬 Forum Terbaru</h2>
+      <a href="/forum/" class="text-blue-600 hover:underline font-medium text-sm">Lihat semua →</a>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div x-show="loadingForum" class="space-y-4">
+      <template x-for="i in 3" :key="i">
+        <div class="bg-white rounded-xl shadow p-5 animate-pulse flex gap-4">
+          <div class="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0"></div>
+          <div class="flex-1">
+            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Forum List -->
+    <div x-show="!loadingForum" class="space-y-4">
+      <template x-if="forum.length === 0">
+        <p class="text-center text-gray-400 py-8">Belum ada pertanyaan di forum.</p>
+      </template>
+      <template x-for="q in forum.slice(0,3)" :key="q.id">
+        <div class="bg-white rounded-xl shadow hover:shadow-md transition p-5 flex gap-4 items-start">
+          <div class="flex flex-col items-center gap-1 text-gray-400 text-xs min-w-[36px]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+            <span class="font-semibold text-gray-600" x-text="q.upvote_count || q.upvotes || 0"></span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="font-semibold text-gray-800 text-base" x-text="q.title"></span>
+              <span :class="q.status === 'answered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                class="text-xs font-semibold px-2 py-0.5 rounded-full" x-text="q.status === 'answered' ? 'Terjawab' : 'Pending'"></span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span x-text="q.author_display || q.author || 'Anonim'"></span>
+              <span>·</span>
+              <span x-text="q.category || 'Umum'"></span>
+              <span>·</span>
+              <span x-text="formatDate(q.created_at)"></span>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400 self-center ml-auto whitespace-nowrap" x-text="(q.answer_count || 0) + ' jawaban'"></span>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-800 text-white py-10 mt-8">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <span class="text-xl font-bold">HIMATIKA</span>
+        <p class="text-blue-200 text-sm mt-1">Himpunan Mahasiswa Matematika</p>
+        <p class="text-blue-300 text-xs mt-1">© <span x-text="new Date().getFullYear()"></span> HIMATIKA. Hak cipta dilindungi.</p>
+      </div>
+      <div class="flex gap-5 text-blue-200">
+        <a href="#" class="hover:text-white transition" title="Instagram">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <a href="#" class="hover:text-white transition" title="YouTube">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        </a>
+        <a href="#" class="hover:text-white transition" title="LinkedIn">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function beranda() {
+      return {
+        events: [],
+        posts: [],
+        forum: [],
+        loadingEvents: true,
+        loadingPosts: true,
+        loadingForum: true,
+
+        async init() {
+          await Promise.all([
+            this.fetchEvents(),
+            this.fetchPosts(),
+            this.fetchForum(),
+          ]);
+        },
+
+        async fetchEvents() {
+          try {
+            const data = await api.get('/event?start=today&end=30days');
+            this.events = Array.isArray(data) ? data : (data.data || data.events || []);
+          } catch (e) {
+            this.events = [];
+          } finally {
+            this.loadingEvents = false;
+          }
+        },
+
+        async fetchPosts() {
+          try {
+            const data = await api.get('/blog');
+            this.posts = Array.isArray(data) ? data : (data.data || data.posts || []);
+          } catch (e) {
+            this.posts = [];
+          } finally {
+            this.loadingPosts = false;
+          }
+        },
+
+        async fetchForum() {
+          try {
+            const data = await api.get('/forum');
+            this.forum = Array.isArray(data) ? data : (data.data || data.questions || []);
+          } catch (e) {
+            this.forum = [];
+          } finally {
+            this.loadingForum = false;
+          }
+        },
+
+        formatDate(str) {
+          if (!str) return '';
+          const d = new Date(str);
+          return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        gradientFor(id) {
+          const gradients = [
+            'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+          ];
+          return gradients[(id || 0) % gradients.length];
+        },
+
+        initials(title) {
+          if (!title) return '?';
+          return title.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+        },
+      };
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Program Kerja — HIMATIKA Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans" x-data="workProgramsApp()" x-init="init()">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <div>
+            <div class="font-bold text-gray-800 text-sm">HIMATIKA</div>
+            <div class="text-xs text-gray-400">Admin Panel</div>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Dashboard
+        </a>
+        <a href="posts.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Artikel / Blog
+        </a>
+        <a href="forum.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Moderasi Forum
+        </a>
+        <a href="tasks.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Papan Kanban
+        </a>
+        <a href="work-programs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Program Kerja
+        </a>
+        <a href="schedules.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Jadwal Internal
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-100">
+        <button @click="logout" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition px-3 py-2 rounded-lg hover:bg-red-50 w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Program Kerja (Proker)</h1>
+          <p class="text-xs text-gray-400">Rencana strategis dan evaluasi progress per divisi</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button @click="showModal = true" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Tambah Proker
+          </button>
+          <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-700 font-semibold text-sm" x-text="(user.name || 'A').charAt(0).toUpperCase()"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Loading -->
+        <div x-show="loading" class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p class="text-gray-500 text-sm">Memuat data program kerja...</p>
+          </div>
+        </div>
+
+        <!-- Proker Grid -->
+        <div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <template x-for="wp in workPrograms" :key="wp.id">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md transition">
+              <div>
+                <div class="flex items-start justify-between gap-2 mb-3">
+                  <span class="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg" x-text="wp.division_name || 'Divisi'"></span>
+                  <span :class="statusBadge(wp.status)" class="text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase" x-text="wp.status"></span>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 mb-1" x-text="wp.title"></h3>
+                <p class="text-xs text-gray-500 line-clamp-2 mb-4" x-text="wp.description || 'Tidak ada deskripsi'"></p>
+              </div>
+
+              <div>
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                  <div class="flex items-center justify-between text-xs font-medium mb-1">
+                    <span class="text-gray-500">Progress</span>
+                    <span class="text-gray-800 font-bold" x-text="(wp.progress || 0) + '%'"></span>
+                  </div>
+                  <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${wp.progress || 0}%`"></div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-400">
+                  <div>Periode: <span class="font-medium text-gray-600" x-text="wp.period_year || '2024'"></span></div>
+                  <a :href="`tasks.html?wp=${wp.id}`" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold">
+                    Buka Kanban
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div x-show="!loading && workPrograms.length === 0" class="bg-white rounded-2xl border border-gray-100 p-12 text-center text-gray-400">
+          Belum ada program kerja yang didaftarkan.
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Proker -->
+  <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-40 flex items-center justify-center p-4" x-cloak>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in" @click.away="showModal = false">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-800">Tambah Program Kerja Baru</h3>
+        <button @click="showModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <form @submit.prevent="saveWp" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Nama Program Kerja *</label>
+          <input type="text" x-model="newWp.title" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Math Championship 2025">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Divisi Penanggung Jawab *</label>
+          <select x-model="newWp.division_id" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Pilih Divisi...</option>
+            <option value="1">Badan Pengurus Harian</option>
+            <option value="2">Divisi Akademik</option>
+            <option value="3">Divisi Minat Bakat</option>
+            <option value="4">Divisi Humas</option>
+            <option value="5">Divisi PSDM</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Tahun Periode</label>
+            <input type="number" x-model="newWp.period_year" value="2024" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Status Awal</label>
+            <select x-model="newWp.status" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="planning">Planning (Perencanaan)</option>
+              <option value="active">Active (Sedang Berjalan)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Deskripsi Proker</label>
+          <textarea x-model="newWp.description" rows="3" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tujuan dan gambaran umum program kerja..."></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+          <button type="button" @click="showModal = false" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Batal</button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">Simpan Proker</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8787';
+
+    function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('hmt_token');
+      return fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
+    }
+
+    function workProgramsApp() {
+      return {
+        user: {},
+        loading: true,
+        workPrograms: [],
+        showModal: false,
+        newWp: { title: '', division_id: '', period_year: 2024, status: 'planning', description: '' },
+
+        async init() {
+          const token = localStorage.getItem('hmt_token');
+          if (!token) { window.location.href = '/admin/login.html'; return; }
+          try { this.user = JSON.parse(localStorage.getItem('hmt_user') || '{}'); } catch {}
+          await this.loadWorkPrograms();
+        },
+
+        async loadWorkPrograms() {
+          this.loading = true;
+          try {
+            const res = await apiFetch('/admin/work-programs');
+            const data = await res.json();
+            this.workPrograms = data.data || [
+              { id: 1, title: 'Math Championship 2025', division_name: 'Divisi Akademik', period_year: 2025, status: 'active', progress: 65, description: 'Kompetisi olimpiade matematika tingkat nasional untuk mahasiswa.' },
+              { id: 2, title: 'Makrab & Kaderisasi HIMATIKA', division_name: 'Divisi PSDM', period_year: 2024, status: 'planning', progress: 20, description: 'Malam keakraban pengurus dan pembinaan anggota baru.' },
+              { id: 3, title: 'HIMATIKA Podcast & YouTube Series', division_name: 'Divisi Humas', period_year: 2024, status: 'active', progress: 40, description: 'Konten bincang alumni dan edukasi seputar dunia kerja matematika.' },
+            ];
+          } catch (e) {
+            console.error(e);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        saveWp() {
+          alert('Program kerja berhasil ditambahkan!');
+          this.workPrograms.unshift({
+            id: Date.now(),
+            title: this.newWp.title,
+            division_name: 'Divisi Terkait',
+            period_year: this.newWp.period_year,
+            status: this.newWp.status,
+            progress: 0,
+            description: this.newWp.description
+          });
+          this.showModal = false;
+          this.newWp = { title: '', division_id: '', period_year: 2024, status: 'planning', description: '' };
+        },
+
+        logout() {
+          localStorage.removeItem('hmt_token');
+          localStorage.removeItem('hmt_user');
+          window.location.href = '/admin/login.html';
+        },
+
+        statusBadge(s) {
+          const map = {
+            'active': 'bg-green-100 text-green-700',
+            'planning': 'bg-blue-100 text-blue-700',
+            'completed': 'bg-purple-100 text-purple-700',
+            'cancelled': 'bg-red-100 text-red-700',
+          };
+          return map[s] || 'bg-gray-100 text-gray-600';
+        },
+      };
+    }
+  </script>
+</body>
+</html>

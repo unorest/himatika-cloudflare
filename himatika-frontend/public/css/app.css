@@ -1,0 +1,198 @@
+/* ============================================================
+   app.css — Custom styles HIMATIKA (pelengkap Tailwind CSS)
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   1. Custom Scrollbar
+   ---------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ----------------------------------------------------------
+   2. Fade-in animation
+   ---------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* ----------------------------------------------------------
+   3. Kanban Card
+   ---------------------------------------------------------- */
+.kanban-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: grab;
+}
+.kanban-card:active {
+  cursor: grabbing;
+}
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.kanban-card.sortable-ghost {
+  opacity: 0.4;
+  background: #e2e8f0;
+}
+.kanban-card.sortable-drag {
+  opacity: 0.9;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* ----------------------------------------------------------
+   4. Badge warna untuk status task
+   ---------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* Task status */
+.badge-todo        { background: #e2e8f0; color: #475569; }
+.badge-in-progress { background: #dbeafe; color: #1d4ed8; }
+.badge-review      { background: #fef9c3; color: #a16207; }
+.badge-done        { background: #dcfce7; color: #15803d; }
+
+/* Priority */
+.badge-critical { background: #fee2e2; color: #b91c1c; }
+.badge-high     { background: #ffedd5; color: #c2410c; }
+.badge-medium   { background: #dbeafe; color: #1d4ed8; }
+.badge-low      { background: #f1f5f9; color: #64748b; }
+
+/* Forum status */
+.badge-pending  { background: #fef9c3; color: #a16207; }
+.badge-answered { background: #dcfce7; color: #15803d; }
+.badge-closed   { background: #f1f5f9; color: #64748b; }
+
+/* ----------------------------------------------------------
+   5. Loading Skeleton
+   ---------------------------------------------------------- */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+  border-radius: 4px;
+}
+.skeleton-text.w-3\/4 { width: 75%; }
+.skeleton-text.w-1\/2 { width: 50%; }
+.skeleton-title {
+  height: 1.4em;
+  margin-bottom: 0.75em;
+}
+.skeleton-card {
+  height: 160px;
+  border-radius: 12px;
+}
+
+/* ----------------------------------------------------------
+   6. Toast Notification
+   ---------------------------------------------------------- */
+#toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  animation: fadeIn 0.25s ease forwards;
+  min-width: 260px;
+  max-width: 400px;
+}
+
+.toast-success { background: #dcfce7; color: #15803d; border-left: 4px solid #22c55e; }
+.toast-error   { background: #fee2e2; color: #b91c1c; border-left: 4px solid #ef4444; }
+.toast-info    { background: #dbeafe; color: #1d4ed8; border-left: 4px solid #3b82f6; }
+.toast-warning { background: #fef9c3; color: #a16207; border-left: 4px solid #eab308; }
+
+/* ----------------------------------------------------------
+   7. Utility helpers
+   ---------------------------------------------------------- */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Prose (artikel blog) */
+.prose h2 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.prose h3 { font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+.prose p  { margin-bottom: 1rem; line-height: 1.75; }
+.prose ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose li { margin-bottom: 0.25rem; }
+.prose blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  color: #475569;
+  font-style: italic;
+  margin: 1rem 0;
+}
+.prose code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+.prose pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}

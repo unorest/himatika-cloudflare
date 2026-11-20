@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — HIMATIKA Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans" x-data="dashboardApp()" x-init="init()">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <div>
+            <div class="font-bold text-gray-800 text-sm">HIMATIKA</div>
+            <div class="text-xs text-gray-400">Admin Panel</div>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Dashboard
+        </a>
+        <a href="posts.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Artikel / Blog
+        </a>
+        <a href="forum.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Moderasi Forum
+        </a>
+        <a href="tasks.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Papan Kanban
+        </a>
+        <a href="work-programs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Program Kerja
+        </a>
+        <a href="schedules.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Jadwal Internal
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-100">
+        <button @click="logout" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition px-3 py-2 rounded-lg hover:bg-red-50 w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Dashboard</h1>
+          <p class="text-xs text-gray-400">Selamat datang kembali</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right">
+            <div class="text-sm font-medium text-gray-700" x-text="user.name || 'Admin'"></div>
+            <div class="text-xs text-gray-400" x-text="user.role || 'Administrator'"></div>
+          </div>
+          <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-700 font-semibold text-sm" x-text="(user.name || 'A').charAt(0).toUpperCase()"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Loading -->
+        <div x-show="loading" class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p class="text-gray-500 text-sm">Memuat data...</p>
+          </div>
+        </div>
+
+        <div x-show="!loading">
+          <!-- Stat Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <template x-for="stat in stats" :key="stat.label">
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" x-text="stat.label"></div>
+                  <div :class="stat.iconBg" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="text-2xl font-bold text-gray-800" x-text="stat.value"></div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Two-column layout -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Tugas Saya -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-800">Tugas Saya</h2>
+                <a href="tasks.html" class="text-xs text-blue-600 hover:underline">Lihat semua →</a>
+              </div>
+              <div class="divide-y divide-gray-50">
+                <template x-if="myTasks.length === 0">
+                  <div class="p-8 text-center text-gray-400 text-sm">Belum ada tugas</div>
+                </template>
+                <template x-for="task in myTasks.slice(0,5)" :key="task.id">
+                  <div class="px-5 py-3.5 flex items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm font-medium text-gray-800 truncate" x-text="task.title"></div>
+                      <div class="text-xs text-gray-400 mt-0.5" x-text="task.due_date ? 'Tenggat: ' + formatDate(task.due_date) : 'Tanpa tenggat'"></div>
+                    </div>
+                    <span :class="statusBadge(task.status)" class="text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap" x-text="task.status"></span>
+                    <span :class="priorityBadge(task.priority)" class="text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap" x-text="task.priority"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Event Mendatang -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-800">Event Mendatang</h2>
+                <a href="schedules.html" class="text-xs text-blue-600 hover:underline">Lihat semua →</a>
+              </div>
+              <div class="divide-y divide-gray-50">
+                <template x-if="upcomingEvents.length === 0">
+                  <div class="p-8 text-center text-gray-400 text-sm">Belum ada event</div>
+                </template>
+                <template x-for="event in upcomingEvents.slice(0,5)" :key="event.id">
+                  <div class="px-5 py-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
+                      <span class="text-blue-700 text-xs font-bold leading-none" x-text="new Date(event.start_at).getDate()"></span>
+                      <span class="text-blue-400 text-xs leading-none" x-text="new Date(event.start_at).toLocaleString('id',{month:'short'})"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm font-medium text-gray-800 truncate" x-text="event.title"></div>
+                      <div class="text-xs text-gray-400 mt-0.5" x-text="event.location || 'Lokasi belum ditentukan'"></div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8787';
+
+    function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('hmt_token');
+      return fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
+    }
+
+    function dashboardApp() {
+      return {
+        user: {},
+        loading: true,
+        stats: [],
+        myTasks: [],
+        upcomingEvents: [],
+
+        async init() {
+          const token = localStorage.getItem('hmt_token');
+          if (!token) { window.location.href = '/admin/login.html'; return; }
+          try {
+            this.user = JSON.parse(localStorage.getItem('hmt_user') || '{}');
+          } catch {}
+
+          try {
+            const res = await apiFetch('/admin/dashboard');
+            if (res.status === 401) { this.logout(); return; }
+            const data = await res.json();
+            const d = data.data || data;
+            this.myTasks = d.tasks || [];
+            this.upcomingEvents = d.events || [];
+            this.stats = [
+              { label: 'Users', value: d.stats?.users ?? '—', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+              { label: 'Artikel', value: d.stats?.posts ?? '—', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', iconBg: 'bg-green-50', iconColor: 'text-green-600' },
+              { label: 'Events', value: d.stats?.events ?? '—', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', iconBg: 'bg-purple-50', iconColor: 'text-purple-600' },
+              { label: 'Tugas', value: d.stats?.tasks ?? '—', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', iconBg: 'bg-yellow-50', iconColor: 'text-yellow-600' },
+              { label: 'Forum Pending', value: d.stats?.forum_pending ?? '—', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z', iconBg: 'bg-red-50', iconColor: 'text-red-600' },
+              { label: 'Notif Belum Baca', value: d.stats?.unread_notifs ?? '—', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', iconBg: 'bg-indigo-50', iconColor: 'text-indigo-600' },
+            ];
+          } catch (e) {
+            console.error(e);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        logout() {
+          localStorage.removeItem('hmt_token');
+          localStorage.removeItem('hmt_user');
+          window.location.href = '/admin/login.html';
+        },
+
+        formatDate(d) {
+          return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        statusBadge(s) {
+          const map = {
+            'TODO': 'bg-gray-100 text-gray-700',
+            'IN_PROGRESS': 'bg-blue-100 text-blue-700',
+            'REVIEW': 'bg-yellow-100 text-yellow-700',
+            'DONE': 'bg-green-100 text-green-700',
+          };
+          return map[s] || 'bg-gray-100 text-gray-600';
+        },
+
+        priorityBadge(p) {
+          const map = {
+            'critical': 'bg-red-100 text-red-700',
+            'high': 'bg-orange-100 text-orange-700',
+            'medium': 'bg-blue-100 text-blue-700',
+            'low': 'bg-gray-100 text-gray-600',
+          };
+          return map[p] || 'bg-gray-100 text-gray-600';
+        },
+      };
+    }
+  </script>
+</body>
+</html>

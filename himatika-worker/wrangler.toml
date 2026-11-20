@@ -1,0 +1,31 @@
+name = "himatika-worker"
+main = "src/index.ts"
+compatibility_date = "2024-07-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── D1 Database ──────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "himatika_db"
+database_id   = "GANTI-DENGAN-DATABASE-ID-ANDA"
+migrations_dir = "migrations"
+
+# ── KV Namespace (session / cache) ───────────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS"
+id      = "GANTI-DENGAN-KV-ID-ANDA"
+
+# ── R2 Bucket (file upload) ───────────────────────────────────
+[[r2_buckets]]
+binding     = "UPLOADS"
+bucket_name = "himatika-uploads"
+
+# ── Environment Variables ─────────────────────────────────────
+[vars]
+APP_NAME   = "HIMATIKA"
+APP_ENV    = "development"
+JWT_SECRET = "ganti-dengan-secret-yang-aman-minimal-32-karakter"
+
+# ── Development ───────────────────────────────────────────────
+[dev]
+port = 8787

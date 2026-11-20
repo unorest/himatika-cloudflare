@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id" x-data="daftarEvent()" x-init="init()">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Event - HIMATIKA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/js/api.js"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="/" class="text-2xl font-bold text-blue-700 tracking-tight">HIMATIKA</a>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-gray-600 hover:text-blue-700 transition">Beranda</a>
+          <a href="/blog/" class="text-gray-600 hover:text-blue-700 transition">Blog</a>
+          <a href="/event/" class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-0.5">Event</a>
+          <a href="/forum/" class="text-gray-600 hover:text-blue-700 transition">Forum</a>
+        </div>
+        <button @click="open = !open" class="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div x-show="open" x-transition class="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-2">
+      <a href="/" class="block text-gray-700 py-1">Beranda</a>
+      <a href="/blog/" class="block text-gray-700 py-1">Blog</a>
+      <a href="/event/" class="block text-blue-700 font-semibold py-1">Event</a>
+      <a href="/forum/" class="block text-gray-700 py-1">Forum</a>
+    </div>
+  </nav>
+
+  <div class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Loading Event Info -->
+    <div x-show="loadingEvent" class="animate-pulse mb-8">
+      <div class="h-6 bg-gray-200 rounded w-1/2 mb-3"></div>
+      <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+    </div>
+
+    <!-- Event Info Card -->
+    <div x-show="!loadingEvent && event" class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8">
+      <div class="flex items-start gap-4">
+        <div class="bg-blue-600 text-white rounded-xl px-4 py-3 text-center flex-shrink-0">
+          <div class="text-xs font-semibold uppercase" x-text="monthStr(event?.start_date || event?.date)"></div>
+          <div class="text-2xl font-extrabold" x-text="dayStr(event?.start_date || event?.date)"></div>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-900" x-text="event?.title || event?.name"></h2>
+          <p class="text-gray-600 text-sm mt-1">
+            <span x-text="event?.location || 'TBA'"></span>
+            <span x-show="event?.time"> · <span x-text="event?.time"></span></span>
+          </p>
+          <p class="text-gray-500 text-sm mt-1" x-text="event?.description || ''"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Not Found -->
+    <div x-show="!loadingEvent && !event && !eventError" class="text-center py-10 text-gray-400">
+      Event tidak ditemukan.
+    </div>
+    <div x-show="eventError" class="bg-red-50 text-red-600 rounded-xl p-4 mb-8 text-sm" x-text="eventError"></div>
+
+    <!-- SUCCESS STATE -->
+    <div x-show="success" class="text-center py-16">
+      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h2 class="text-2xl font-bold text-green-700 mb-2">Pendaftaran Berhasil!</h2>
+      <p class="text-gray-600 mb-6">Terima kasih telah mendaftar. Kami akan menghubungi Anda lebih lanjut.</p>
+      <a href="/event/" class="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-full hover:bg-blue-700 transition">Lihat Event Lain</a>
+    </div>
+
+    <!-- REGISTRATION FORM -->
+    <div x-show="!success">
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">Formulir Pendaftaran</h1>
+
+      <form @submit.prevent="submitForm" class="bg-white rounded-2xl shadow p-6 space-y-5">
+
+        <!-- Nama -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+          <input type="text" x-model="form.nama" required placeholder="Masukkan nama lengkap Anda"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+
+        <!-- NIM -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">NIM <span class="text-gray-400 font-normal">(opsional)</span></label>
+          <input type="text" x-model="form.nim" placeholder="Nomor Induk Mahasiswa"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+          <input type="email" x-model="form.email" required placeholder="email@contoh.com"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+
+        <!-- HP -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">No. HP / WhatsApp <span class="text-red-500">*</span></label>
+          <input type="tel" x-model="form.hp" required placeholder="08xxxxxxxxxx"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+
+        <!-- Catatan -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Catatan <span class="text-gray-400 font-normal">(opsional)</span></label>
+          <textarea x-model="form.catatan" rows="3" placeholder="Pertanyaan atau catatan khusus..."
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm resize-none"></textarea>
+        </div>
+
+        <!-- Error -->
+        <div x-show="formError" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="formError"></div>
+
+        <!-- Submit -->
+        <button type="submit" :disabled="submitting"
+          class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <span x-show="submitting" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <span x-text="submitting ? 'Mendaftar...' : 'Daftar Sekarang'"></span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-blue-200 text-sm">
+      © <span x-text="new Date().getFullYear()"></span> HIMATIKA — Himpunan Mahasiswa Matematika
+    </div>
+  </footer>
+
+  <script>
+    function daftarEvent() {
+      return {
+        slug: null,
+        event: null,
+        loadingEvent: true,
+        eventError: null,
+        success: false,
+        submitting: false,
+        formError: null,
+        form: {
+          nama: '',
+          nim: '',
+          email: '',
+          hp: '',
+          catatan: '',
+        },
+
+        async init() {
+          this.slug = new URLSearchParams(location.search).get('slug');
+          if (!this.slug) {
+            this.eventError = 'Slug event tidak ditemukan di URL.';
+            this.loadingEvent = false;
+            return;
+          }
+          try {
+            const data = await api.get(`/event/${this.slug}`);
+            this.event = data.data || data.event || data;
+          } catch(e) {
+            this.eventError = e?.message || 'Gagal memuat informasi event.';
+          } finally {
+            this.loadingEvent = false;
+          }
+        },
+
+        async submitForm() {
+          this.formError = null;
+          this.submitting = true;
+          try {
+            await api.post(`/event/${this.slug}/daftar`, {
+              nama: this.form.nama,
+              nim: this.form.nim || undefined,
+              email: this.form.email,
+              hp: this.form.hp,
+              catatan: this.form.catatan || undefined,
+            });
+            this.success = true;
+          } catch(e) {
+            this.formError = e?.message || 'Terjadi kesalahan. Silakan coba lagi.';
+          } finally {
+            this.submitting = false;
+          }
+        },
+
+        monthStr(str) {
+          if (!str) return '';
+          return new Date(str).toLocaleDateString('id-ID', { month: 'short' });
+        },
+
+        dayStr(str) {
+          if (!str) return '';
+          return new Date(str).getDate();
+        },
+      };
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id" x-data="forumPage()" x-init="init()">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forum - HIMATIKA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/js/api.js"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="/" class="text-2xl font-bold text-blue-700 tracking-tight">HIMATIKA</a>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-gray-600 hover:text-blue-700 transition">Beranda</a>
+          <a href="/blog/" class="text-gray-600 hover:text-blue-700 transition">Blog</a>
+          <a href="/event/" class="text-gray-600 hover:text-blue-700 transition">Event</a>
+          <a href="/forum/" class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-0.5">Forum</a>
+        </div>
+        <button @click="open = !open" class="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div x-show="open" x-transition class="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-2">
+      <a href="/" class="block text-gray-700 py-1">Beranda</a>
+      <a href="/blog/" class="block text-gray-700 py-1">Blog</a>
+      <a href="/event/" class="block text-gray-700 py-1">Event</a>
+      <a href="/forum/" class="block text-blue-700 font-semibold py-1">Forum</a>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-12 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">Forum HIMATIKA</h1>
+        <p class="text-blue-200">Tanya, diskusi, dan saling bantu sesama mahasiswa Matematika.</p>
+      </div>
+      <a href="/forum/tanya.html"
+        class="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-6 py-3 rounded-full hover:bg-blue-50 transition text-sm shadow">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Ajukan Pertanyaan
+      </a>
+    </div>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-10">
+
+    <!-- Filter Tabs -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <button @click="filter = 'semua'"
+        :class="filter === 'semua' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
+        class="px-4 py-2 rounded-full text-sm font-medium transition">Semua</button>
+      <button @click="filter = 'pending'"
+        :class="filter === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
+        class="px-4 py-2 rounded-full text-sm font-medium transition">Pending</button>
+      <button @click="filter = 'answered'"
+        :class="filter === 'answered' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
+        class="px-4 py-2 rounded-full text-sm font-medium transition">Terjawab</button>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div x-show="loading" class="space-y-4">
+      <template x-for="i in 5" :key="i">
+        <div class="bg-white rounded-xl shadow p-5 animate-pulse flex gap-4">
+          <div class="flex flex-col items-center gap-1 w-10 flex-shrink-0">
+            <div class="w-6 h-6 bg-gray-200 rounded"></div>
+            <div class="w-6 h-4 bg-gray-200 rounded"></div>
+          </div>
+          <div class="flex-1">
+            <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+            <div class="flex gap-2">
+              <div class="h-5 bg-gray-200 rounded w-16"></div>
+              <div class="h-5 bg-gray-200 rounded w-16"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Forum List -->
+    <div x-show="!loading" class="space-y-4">
+      <template x-if="filteredQuestions.length === 0">
+        <div class="text-center py-16 text-gray-400">
+          <svg class="w-16 h-16 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="font-medium">Tidak ada pertanyaan ditemukan.</p>
+          <a href="/forum/tanya.html" class="text-blue-600 hover:underline text-sm mt-2 inline-block">Jadilah yang pertama bertanya →</a>
+        </div>
+      </template>
+
+      <template x-for="q in filteredQuestions" :key="q.id">
+        <div class="bg-white rounded-xl shadow hover:shadow-md transition p-5 flex gap-4">
+
+          <!-- Upvote -->
+          <div class="flex flex-col items-center gap-1 text-xs text-gray-400 flex-shrink-0 w-10">
+            <button
+              @click="upvote(q)"
+              :class="q.upvoted ? 'text-blue-600' : 'text-gray-400 hover:text-blue-600'"
+              class="transition p-1 rounded"
+              title="Upvote">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+            </button>
+            <span class="font-semibold text-gray-700 text-sm" x-text="q.upvote_count || q.upvotes || 0"></span>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h3 class="font-bold text-gray-800 text-base" x-text="q.title"></h3>
+              <span
+                :class="q.status === 'answered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                class="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                x-text="q.status === 'answered' ? '✓ Terjawab' : '⏳ Pending'">
+              </span>
+            </div>
+
+            <div class="text-sm text-gray-500 flex flex-wrap items-center gap-2 mb-3">
+              <span x-text="q.author_display || q.author || 'Anonim'"></span>
+              <span>·</span>
+              <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-medium" x-text="q.category || 'Umum'"></span>
+              <span>·</span>
+              <span x-text="formatDate(q.created_at)"></span>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs text-gray-400">
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <span x-text="(q.answer_count || 0) + ' jawaban'"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Toast Notification -->
+    <div
+      x-show="toast"
+      x-transition.opacity
+      class="fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50"
+      x-text="toast">
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-blue-200 text-sm">
+      © <span x-text="new Date().getFullYear()"></span> HIMATIKA — Himpunan Mahasiswa Matematika
+    </div>
+  </footer>
+
+  <script>
+    function forumPage() {
+      return {
+        questions: [],
+        loading: true,
+        filter: 'semua',
+        toast: null,
+        toastTimer: null,
+
+        get filteredQuestions() {
+          if (this.filter === 'semua') return this.questions;
+          return this.questions.filter(q => q.status === this.filter);
+        },
+
+        async init() {
+          try {
+            const data = await api.get('/forum');
+            this.questions = Array.isArray(data) ? data : (data.data || data.questions || []);
+          } catch(e) {
+            this.questions = [];
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async upvote(q) {
+          if (q.upvoted) return;
+          try {
+            await api.post(`/forum/upvote/${q.id}`, {});
+            q.upvote_count = (q.upvote_count || q.upvotes || 0) + 1;
+            q.upvotes = q.upvote_count;
+            q.upvoted = true;
+            this.showToast('Upvote berhasil!');
+          } catch(e) {
+            this.showToast('Gagal upvote: ' + (e?.message || 'Error'));
+          }
+        },
+
+        showToast(msg) {
+          this.toast = msg;
+          if (this.toastTimer) clearTimeout(this.toastTimer);
+          this.toastTimer = setTimeout(() => { this.toast = null; }, 3000);
+        },
+
+        formatDate(str) {
+          if (!str) return '';
+          return new Date(str).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+      };
+    }
+  </script>
+</body>
+</html>

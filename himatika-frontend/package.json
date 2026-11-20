@@ -1,0 +1,9 @@
+{
+  "name": "himatika-frontend",
+  "version": "1.0.0",
+  "description": "Frontend statis HIMATIKA — Cloudflare Pages + Worker API",
+  "scripts": {
+    "build": "echo 'Static site - deploy public/ folder to Cloudflare Pages'",
+    "dev": "npx serve public -p 3000"
+  }
+}

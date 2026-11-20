@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Papan Kanban — HIMATIKA Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <style>
+    .kanban-card { transition: box-shadow 0.2s, transform 0.2s; }
+    .kanban-card:hover { box-shadow: 0 8px 25px -5px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .sortable-ghost { opacity: 0.4; }
+    .sortable-drag { opacity: 1; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2); transform: rotate(1deg); }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans" x-data="kanbanApp()" x-init="init()">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <div>
+            <div class="font-bold text-gray-800 text-sm">HIMATIKA</div>
+            <div class="text-xs text-gray-400">Admin Panel</div>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Dashboard
+        </a>
+        <a href="posts.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Artikel / Blog
+        </a>
+        <a href="forum.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Moderasi Forum
+        </a>
+        <a href="tasks.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Papan Kanban
+        </a>
+        <a href="work-programs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Program Kerja
+        </a>
+        <a href="schedules.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Jadwal Internal
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-100">
+        <button @click="logout" class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition px-3 py-2 rounded-lg hover:bg-red-50 w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Papan Kanban</h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="text-sm text-gray-600">Program Kerja:</label>
+          <select x-model="selectedWp" @change="loadKanban()" class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Semua</option>
+            <template x-for="wp in workPrograms" :key="wp.id">
+              <option :value="wp.id" x-text="wp.name"></option>
+            </template>
+          </select>
+        </div>
+      </header>
+
+      <!-- Kanban Board -->
+      <div class="flex-1 overflow-x-auto p-6">
+        <div class="flex gap-5 h-full min-w-max">
+          <template x-for="col in columns" :key="col.status">
+            <div class="w-72 flex flex-col">
+              <!-- Column Header -->
+              <div class="flex items-center justify-between mb-3 px-1">
+                <div class="flex items-center gap-2">
+                  <span :class="col.dotColor" class="w-2.5 h-2.5 rounded-full"></span>
+                  <h3 class="font-semibold text-sm text-gray-700" x-text="col.label"></h3>
+                  <span class="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full" x-text="(boards[col.status] || []).length"></span>
+                </div>
+                <button @click="openAddModal(col.status)" class="text-gray-400 hover:text-blue-600 transition" title="Tambah tugas">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                </button>
+              </div>
+
+              <!-- Cards container -->
+              <div
+                :id="'col-' + col.status"
+                :class="col.colBg"
+                class="flex-1 rounded-xl p-3 space-y-3 overflow-y-auto min-h-32"
+              >
+                <template x-for="task in (boards[col.status] || [])" :key="task.id">
+                  <div
+                    :data-id="task.id"
+                    class="kanban-card bg-white rounded-lg shadow-sm border border-gray-100 p-3.5 cursor-grab active:cursor-grabbing"
+                  >
+                    <!-- Priority + drag handle -->
+                    <div class="flex items-center justify-between mb-2">
+                      <span :class="priorityBadge(task.priority)" class="text-xs font-medium px-2 py-0.5 rounded-full" x-text="task.priority || 'low'"></span>
+                      <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M8 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8-16a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                    </div>
+                    <p class="text-sm font-medium text-gray-800 mb-2 leading-snug" x-text="task.title"></p>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                      <span x-text="task.assignee?.name || 'Belum ditugaskan'"></span>
+                      <span x-text="task.due_date ? formatDate(task.due_date) : '—'"></span>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Empty state -->
+                <div x-show="(boards[col.status] || []).length === 0" class="text-center py-6 text-gray-400 text-xs">
+                  Tidak ada tugas
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div x-show="showModal" x-transition class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div @click.outside="showModal = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Tugas Baru</h3>
+      <form @submit.prevent="addTask">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Tugas</label>
+            <input type="text" x-model="newTask.title" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama tugas..."/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Prioritas</label>
+            <select x-model="newTask.priority" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tenggat Waktu</label>
+            <input type="date" x-model="newTask.due_date" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi (opsional)</label>
+            <textarea x-model="newTask.description" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Detail tugas..."></textarea>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button type="button" @click="showModal = false" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2 rounded-lg text-sm hover:bg-gray-50 transition">Batal</button>
+          <button type="submit" :disabled="savingTask" class="flex-1 bg-blue-600 text-white font-medium py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 transition" x-text="savingTask ? 'Menyimpan...' : 'Tambah Tugas'"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8787';
+    function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('hmt_token');
+      return fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) },
+      });
+    }
+
+    function kanbanApp() {
+      return {
+        columns: [
+          { status: 'TODO',        label: 'TODO',        dotColor: 'bg-gray-400',   colBg: 'bg-gray-100' },
+          { status: 'IN_PROGRESS', label: 'IN PROGRESS', dotColor: 'bg-blue-500',   colBg: 'bg-blue-50' },
+          { status: 'REVIEW',      label: 'REVIEW',      dotColor: 'bg-yellow-500', colBg: 'bg-yellow-50' },
+          { status: 'DONE',        label: 'DONE',        dotColor: 'bg-green-500',  colBg: 'bg-green-50' },
+        ],
+        boards: { TODO: [], IN_PROGRESS: [], REVIEW: [], DONE: [] },
+        workPrograms: [],
+        selectedWp: '',
+        showModal: false,
+        newTask: { title: '', priority: 'medium', due_date: '', description: '', status: 'TODO' },
+        savingTask: false,
+        sortables: [],
+
+        async init() {
+          if (!localStorage.getItem('hmt_token')) { window.location.href = '/admin/login.html'; return; }
+          await this.loadWorkPrograms();
+          await this.loadKanban();
+          this.$nextTick(() => this.initSortable());
+        },
+
+        async loadWorkPrograms() {
+          try {
+            const res = await apiFetch('/admin/work-programs');
+            const data = await res.json();
+            this.workPrograms = data.data || data || [];
+          } catch {}
+        },
+
+        async loadKanban() {
+          const url = this.selectedWp ? `/admin/tasks/kanban/${this.selectedWp}` : '/admin/tasks/kanban/all';
+          try {
+            const res = await apiFetch(url);
+            const data = await res.json();
+            const tasks = data.data || data || [];
+            this.boards = { TODO: [], IN_PROGRESS: [], REVIEW: [], DONE: [] };
+            tasks.forEach(t => {
+              if (this.boards[t.status]) this.boards[t.status].push(t);
+            });
+          } catch {}
+          this.$nextTick(() => this.initSortable());
+        },
+
+        initSortable() {
+          this.sortables.forEach(s => s.destroy());
+          this.sortables = [];
+          this.columns.forEach(col => {
+            const el = document.getElementById(`col-${col.status}`);
+            if (!el) return;
+            const s = Sortable.create(el, {
+              group: 'kanban',
+              animation: 180,
+              ghostClass: 'sortable-ghost',
+              dragClass: 'sortable-drag',
+              handle: undefined,
+              onEnd: async (evt) => {
+                const taskId = evt.item.getAttribute('data-id');
+                const newStatus = evt.to.id.replace('col-', '');
+                const sortOrder = evt.newIndex;
+                try {
+                  await apiFetch('/admin/tasks/move', {
+                    method: 'POST',
+                    body: JSON.stringify({ task_id: taskId, status: newStatus, sort_order: sortOrder }),
+                  });
+                } catch (e) { console.error('Move failed', e); }
+              },
+            });
+            this.sortables.push(s);
+          });
+        },
+
+        openAddModal(status) {
+          this.newTask = { title: '', priority: 'medium', due_date: '', description: '', status };
+          this.showModal = true;
+        },
+
+        async addTask() {
+          this.savingTask = true;
+          try {
+            const body = { ...this.newTask };
+            if (this.selectedWp) body.work_program_id = this.selectedWp;
+            await apiFetch('/admin/tasks', { method: 'POST', body: JSON.stringify(body) });
+            this.showModal = false;
+            await this.loadKanban();
+          } catch (e) { alert('Gagal menambah tugas'); }
+          finally { this.savingTask = false; }
+        },
+
+        logout() {
+          localStorage.removeItem('hmt_token');
+          localStorage.removeItem('hmt_user');
+          window.location.href = '/admin/login.html';
+        },
+
+        formatDate(d) {
+          return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        },
+
+        priorityBadge(p) {
+          const map = { critical: 'bg-red-100 text-red-700', high: 'bg-orange-100 text-orange-700', medium: 'bg-blue-100 text-blue-700', low: 'bg-gray-100 text-gray-600' };
+          return map[p] || 'bg-gray-100 text-gray-600';
+        },
+      };
+    }
+  </script>
+</body>
+</html>

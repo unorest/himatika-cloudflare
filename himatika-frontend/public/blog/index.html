@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id" x-data="blogList()" x-init="init()">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - HIMATIKA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="/js/api.js"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="/" class="text-2xl font-bold text-blue-700 tracking-tight">HIMATIKA</a>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-gray-600 hover:text-blue-700 transition">Beranda</a>
+          <a href="/blog/" class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-0.5">Blog</a>
+          <a href="/event/" class="text-gray-600 hover:text-blue-700 transition">Event</a>
+          <a href="/forum/" class="text-gray-600 hover:text-blue-700 transition">Forum</a>
+        </div>
+        <button @click="open = !open" class="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div x-show="open" x-transition class="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-2">
+      <a href="/" class="block text-gray-700 hover:text-blue-700 py-1">Beranda</a>
+      <a href="/blog/" class="block text-blue-700 font-semibold py-1">Blog</a>
+      <a href="/event/" class="block text-gray-700 hover:text-blue-700 py-1">Event</a>
+      <a href="/forum/" class="block text-gray-700 hover:text-blue-700 py-1">Forum</a>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">Blog HIMATIKA</h1>
+      <p class="text-blue-200">Artikel, opini, dan berita dari Himpunan Mahasiswa Matematika.</p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-10">
+
+    <!-- Search + Filter -->
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <input
+        type="text"
+        x-model="search"
+        placeholder="Cari artikel..."
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full md:w-80 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+      <!-- Category Tabs -->
+      <div class="flex gap-2 flex-wrap">
+        <button
+          @click="activeCategory = ''"
+          :class="activeCategory === '' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
+          class="px-4 py-2 rounded-full text-sm font-medium transition"
+        >Semua</button>
+        <template x-for="cat in categories" :key="cat">
+          <button
+            @click="activeCategory = cat"
+            :class="activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
+            class="px-4 py-2 rounded-full text-sm font-medium transition"
+            x-text="cat"
+          ></button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div x-show="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <template x-for="i in 9" :key="i">
+        <div class="bg-white rounded-xl shadow overflow-hidden animate-pulse">
+          <div class="h-44 bg-gray-200"></div>
+          <div class="p-5">
+            <div class="h-3 bg-gray-200 rounded w-1/4 mb-3"></div>
+            <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-full mb-1"></div>
+            <div class="h-3 bg-gray-200 rounded w-2/3 mb-4"></div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Blog Grid -->
+    <div x-show="!loading">
+      <template x-if="filteredPosts.length === 0">
+        <div class="text-center py-16 text-gray-400">
+          <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <p class="text-lg font-medium">Tidak ada artikel ditemukan.</p>
+        </div>
+      </template>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <template x-for="post in paginatedPosts" :key="post.id">
+          <a :href="`/blog/detail.html?slug=${post.slug}`" class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col group">
+            <!-- Thumbnail -->
+            <div class="h-44 flex items-center justify-center text-white font-bold text-2xl relative overflow-hidden"
+              :style="post.thumbnail ? `background:url('${post.thumbnail}') center/cover no-repeat` : gradientFor(post.id)">
+              <span x-show="!post.thumbnail" class="drop-shadow-lg" x-text="initials(post.title)"></span>
+            </div>
+            <div class="p-5 flex flex-col flex-1">
+              <span class="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1" x-text="post.category || 'Artikel'"></span>
+              <h2 class="font-bold text-gray-800 text-base group-hover:text-blue-700 transition leading-snug mb-2" x-text="post.title"></h2>
+              <p class="text-gray-500 text-sm line-clamp-2 flex-1" x-text="post.excerpt || post.description || ''"></p>
+              <div class="mt-4 flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
+                <span x-text="post.author || post.author_name || 'Admin'"></span>
+                <span x-text="formatDate(post.created_at || post.published_at)"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+
+      <!-- Pagination -->
+      <div x-show="totalPages > 1" class="flex justify-center items-center gap-3 mt-10">
+        <button
+          @click="prevPage"
+          :disabled="page === 1"
+          :class="page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-blue-50'"
+          class="px-5 py-2 border border-gray-300 rounded-full text-sm font-medium transition"
+        >← Sebelumnya</button>
+
+        <span class="text-sm text-gray-600">Halaman <span x-text="page"></span> dari <span x-text="totalPages"></span></span>
+
+        <button
+          @click="nextPage"
+          :disabled="page === totalPages"
+          :class="page === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-blue-50'"
+          class="px-5 py-2 border border-gray-300 rounded-full text-sm font-medium transition"
+        >Selanjutnya →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-blue-200 text-sm">
+      © <span x-text="new Date().getFullYear()"></span> HIMATIKA — Himpunan Mahasiswa Matematika
+    </div>
+  </footer>
+
+  <script>
+    function blogList() {
+      return {
+        allPosts: [],
+        loading: true,
+        page: 1,
+        perPage: 9,
+        search: '',
+        activeCategory: '',
+        categories: [],
+
+        async init() {
+          try {
+            const data = await api.get('/blog?page=1&per_page=9');
+            this.allPosts = Array.isArray(data) ? data : (data.data || data.posts || []);
+            // Extract categories
+            const cats = [...new Set(this.allPosts.map(p => p.category).filter(Boolean))];
+            this.categories = cats;
+          } catch(e) {
+            this.allPosts = [];
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        get filteredPosts() {
+          return this.allPosts.filter(p => {
+            const matchSearch = !this.search || (p.title || '').toLowerCase().includes(this.search.toLowerCase());
+            const matchCat = !this.activeCategory || p.category === this.activeCategory;
+            return matchSearch && matchCat;
+          });
+        },
+
+        get totalPages() {
+          return Math.max(1, Math.ceil(this.filteredPosts.length / this.perPage));
+        },
+
+        get paginatedPosts() {
+          const start = (this.page - 1) * this.perPage;
+          return this.filteredPosts.slice(start, start + this.perPage);
+        },
+
+        prevPage() { if (this.page > 1) this.page--; },
+        nextPage() { if (this.page < this.totalPages) this.page++; },
+
+        formatDate(str) {
+          if (!str) return '';
+          return new Date(str).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        gradientFor(id) {
+          const g = [
+            'background:linear-gradient(135deg,#667eea,#764ba2)',
+            'background:linear-gradient(135deg,#f093fb,#f5576c)',
+            'background:linear-gradient(135deg,#4facfe,#00f2fe)',
+            'background:linear-gradient(135deg,#43e97b,#38f9d7)',
+            'background:linear-gradient(135deg,#fa709a,#fee140)',
+            'background:linear-gradient(135deg,#a18cd1,#fbc2eb)',
+          ];
+          return g[(id || 0) % g.length];
+        },
+
+        initials(title) {
+          if (!title) return '?';
+          return title.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+        },
+      };
+    }
+  </script>
+</body>
+</html>
