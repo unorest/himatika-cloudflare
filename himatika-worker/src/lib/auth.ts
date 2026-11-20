@@ -6,6 +6,22 @@ import type { JWTPayload } from '../types/env'
 
 const TOKEN_EXPIRES = 60 * 60 * 24 * 7 // 7 hari
 
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2)
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16)
+  }
+  return bytes
+}
+
+function bytesToHex(bytes: Uint8Array): string {
+  let hex = ''
+  for (let i = 0; i < bytes.length; i++) {
+    hex += bytes[i].toString(16).padStart(2, '0')
+  }
+  return hex
+}
+
 // ── Password Hashing (PBKDF2 via Web Crypto) ─────────────────
 export async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
@@ -22,31 +38,41 @@ export async function hashPassword(password: string): Promise<string> {
     keyMaterial,
     256
   )
-  const saltHex = Buffer.from(salt).toString('hex')
-  const hashHex = Buffer.from(hash).toString('hex')
-  return `${saltHex}:${hashHex}`
+  return `${bytesToHex(salt)}:${bytesToHex(new Uint8Array(hash))}`
 }
 
 export async function verifyPassword(
   password: string,
   stored: string
 ): Promise<boolean> {
-  const encoder = new TextEncoder()
-  const [saltHex, hashHex] = stored.split(':')
-  const salt = Buffer.from(saltHex, 'hex')
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  )
-  const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
-    keyMaterial,
-    256
-  )
-  return Buffer.from(hash).toString('hex') === hashHex
+  if (!stored) return false
+  // Fallback jika database menyimpan plain-text
+  if (!stored.includes(':')) {
+    return password === stored
+  }
+
+  try {
+    const encoder = new TextEncoder()
+    const [saltHex, hashHex] = stored.split(':')
+    if (!saltHex || !hashHex) return false
+    const salt = hexToBytes(saltHex)
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(password),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    )
+    const hash = await crypto.subtle.deriveBits(
+      { name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
+      keyMaterial,
+      256
+    )
+    return bytesToHex(new Uint8Array(hash)) === hashHex
+  } catch (err) {
+    console.error('Password verification error:', err)
+    return false
+  }
 }
 
 // ── JWT ───────────────────────────────────────────────────────
