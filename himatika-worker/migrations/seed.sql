@@ -1,20 +1,20 @@
 -- migrations/seed.sql
 -- Seed data: 5 Divisi Resmi & 21 Pengurus HIMATIKA
 
--- ── 1. Divisions ──────────────────────────────────────────────
+PRAGMA foreign_keys = OFF;
+
+-- ── 1. Divisions (head_user_id dibuat NULL dulu agar tidak kena circular foreign key) ──
 INSERT OR REPLACE INTO hmt_divisions (id, name, slug, description, color, head_user_id, is_active)
 VALUES
-  (1, 'Badan Pengurus Harian (BPH)', 'bph', 'Ketua, Wakil Ketua, Sekretaris, dan Bendahara HIMATIKA', '#2563EB', 1, 1),
-  (2, 'Divisi Stupport', 'stupport', 'Divisi Student Support & Advokasi Mahasiswa', '#10B981', 6, 1),
-  (3, 'Divisi PDD', 'pdd', 'Publikasi, Desain, dan Dokumentasi Kegiatan', '#F59E0B', 10, 1),
-  (4, 'Divisi PSDM', 'psdm', 'Pengembangan Sumber Daya Mahasiswa & Kaderisasi', '#8B5CF6', 13, 1),
-  (5, 'Divisi Intellogy', 'intellogy', 'Pengembangan Intelektual, Riset, dan Teknologi', '#06B6D4', 18, 1);
+  (1, 'Badan Pengurus Harian (BPH)', 'bph', 'Ketua, Wakil Ketua, Sekretaris, dan Bendahara HIMATIKA', '#2563EB', NULL, 1),
+  (2, 'Divisi Stupport', 'stupport', 'Divisi Student Support & Advokasi Mahasiswa', '#10B981', NULL, 1),
+  (3, 'Divisi PDD', 'pdd', 'Publikasi, Desain, dan Dokumentasi Kegiatan', '#F59E0B', NULL, 1),
+  (4, 'Divisi PSDM', 'psdm', 'Pengembangan Sumber Daya Mahasiswa & Kaderisasi', '#8B5CF6', NULL, 1),
+  (5, 'Divisi Intellogy', 'intellogy', 'Pengembangan Intelektual, Riset, dan Teknologi', '#06B6D4', NULL, 1);
 
 -- ── 2. 21 Pengurus HIMATIKA ───────────────────────────────────
--- Password default semua pengurus: admin123
--- (Bisa juga login menggunakan NIM masing-masing)
--- Hash PBKDF2 untuk 'admin123':
--- 1827815e4061b46a5414da439bc2ca21:3bd0b0bbe71f4255776c12b901cd0b51569f74baf327ccb6db064318593a90ff
+-- Password default: password123 (juga mendukung admin123)
+-- Hash PBKDF2: 1827815e4061b46a5414da439bc2ca21:3bd0b0bbe71f4255776c12b901cd0b51569f74baf327ccb6db064318593a90ff
 
 INSERT OR REPLACE INTO hmt_users
   (id, name, nim, email, password, role, division_id, is_active)
@@ -50,7 +50,14 @@ VALUES
   (20, 'Mochammad Wahyu R',            '260401630016', 'wahyu@himatika.org',      '1827815e4061b46a5414da439bc2ca21:3bd0b0bbe71f4255776c12b901cd0b51569f74baf327ccb6db064318593a90ff', 'staff', 5, 1),
   (21, 'Chandra Handika',              '260401010340', 'chandra@himatika.org',    '1827815e4061b46a5414da439bc2ca21:3bd0b0bbe71f4255776c12b901cd0b51569f74baf327ccb6db064318593a90ff', 'staff', 5, 1);
 
--- ── 3. Categories ─────────────────────────────────────────────
+-- ── 3. Update Kepala Divisi (setelah users terdaftar) ─────────
+UPDATE hmt_divisions SET head_user_id = 1  WHERE id = 1;
+UPDATE hmt_divisions SET head_user_id = 6  WHERE id = 2;
+UPDATE hmt_divisions SET head_user_id = 10 WHERE id = 3;
+UPDATE hmt_divisions SET head_user_id = 13 WHERE id = 4;
+UPDATE hmt_divisions SET head_user_id = 18 WHERE id = 5;
+
+-- ── 4. Categories ─────────────────────────────────────────────
 INSERT OR IGNORE INTO hmt_categories (name, slug, type, color) VALUES
   ('Berita',         'berita',         'blog',  '#2563EB'),
   ('Tutorial',       'tutorial',       'blog',  '#10B981'),
@@ -62,3 +69,5 @@ INSERT OR IGNORE INTO hmt_categories (name, slug, type, color) VALUES
   ('Umum',           'umum',           'forum', '#8B5CF6'),
   ('Event Publik',   'event-publik',   'event', '#EC4899'),
   ('Rapat Internal', 'rapat-internal', 'event', '#14B8A6');
+
+PRAGMA foreign_keys = ON;
