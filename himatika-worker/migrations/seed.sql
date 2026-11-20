@@ -10,14 +10,12 @@ VALUES
   ('Divisi Humas', 'humas', 'Hubungan masyarakat dan publikasi', '#EF4444', 1),
   ('Divisi PSDM', 'psdm', 'Pengembangan SDM anggota', '#8B5CF6', 1);
 
--- ── Admin User (password: admin123) ──────────────────────────
--- Password hash harus diganti menggunakan hashPassword() dari lib/auth.ts
--- Ini placeholder — gunakan script /scripts/create-admin.ts
-INSERT OR IGNORE INTO hmt_users
-  (name, nim, email, password, role, is_active)
+-- ── Admin User (email: admin@himatika.ac.id | password: admin123) ──
+INSERT OR REPLACE INTO hmt_users
+  (id, name, nim, email, password, role, is_active)
 VALUES
-  ('Administrator', '0000000000', 'admin@himatika.ac.id',
-   'HASH_PLACEHOLDER_JALANKAN_SCRIPT_CREATE_ADMIN', 'admin', 1);
+  (1, 'Administrator', '0000000000', 'admin@himatika.ac.id',
+   '1827815e4061b46a5414da439bc2ca21:3bd0b0bbe71f4255776c12b901cd0b51569f74baf327ccb6db064318593a90ff', 'admin', 1);
 
 -- ── Categories ────────────────────────────────────────────────
 INSERT OR IGNORE INTO hmt_categories (name, slug, type, color) VALUES

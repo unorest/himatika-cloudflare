@@ -1,10 +1,22 @@
-// Konstanta base URL Worker
-const API_BASE = 'http://localhost:8787'; // ganti saat production: https://himatika-worker.xxx.workers.dev
+// Konstanta base URL Worker dengan Smart Auto-Detection untuk Local & Codespaces
+function getApiBase() {
+  if (localStorage.getItem('API_BASE')) {
+    return localStorage.getItem('API_BASE');
+  }
+  // Deteksi otomatis jika berjalan di GitHub Codespaces (*-3000.app.github.dev -> *-8787.app.github.dev)
+  if (typeof window !== 'undefined' && window.location.hostname.includes('.app.github.dev')) {
+    return window.location.origin.replace('-3000.', '-8787.');
+  }
+  return 'http://localhost:8787';
+}
+
+const API_BASE = getApiBase();
 
 // Helper fetch dengan auth header otomatis
 async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('hmt_token');
-  const res = await fetch(`${API_BASE}${path}`, {
+  const base = getApiBase();
+  const res = await fetch(`${base}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
