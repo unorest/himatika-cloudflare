@@ -55,23 +55,36 @@ forumRouter.get('/:id', async (c) => {
 
 // POST /forum/tanya — ajukan pertanyaan baru
 forumRouter.post('/tanya', async (c) => {
-  const body = await c.req.json<{
-    title: string
-    body: string
-    author_name: string
-    author_nim?: string
-    author_email?: string
-    is_anonymous?: boolean
-    category_id?: number
-  }>()
+  const data = await c.req.json<any>()
 
-  if (!body.title?.trim() || !body.body?.trim() || !body.author_name?.trim()) {
-    return c.json({ success: false, message: 'Judul, isi, dan nama wajib diisi' }, 422)
+  const title = (data.title || data.judul || '').trim()
+  const bodyText = (data.body || data.isi || '').trim()
+  const isAnonymous = Boolean(data.is_anonymous || data.anonim)
+  const authorName = isAnonymous ? 'Anonim' : (data.author_name || data.nama || '').trim()
+  const authorNim = (data.author_nim || data.nim || '').trim() || undefined
+  const authorEmail = (data.author_email || data.email || '').trim() || undefined
+  const categoryId = data.category_id || undefined
+
+  if (!title || !bodyText) {
+    return c.json({ success: false, message: 'Judul dan isi pertanyaan wajib diisi' }, 422)
+  }
+
+  if (!isAnonymous && !authorName) {
+    return c.json({ success: false, message: 'Nama wajib diisi jika tidak anonim' }, 422)
   }
 
   const ip = c.req.header('CF-Connecting-IP') ?? c.req.header('X-Forwarded-For') ?? '0.0.0.0'
 
-  await submitQuestion(c.env.DB, { ...body, ip_address: ip })
+  await submitQuestion(c.env.DB, {
+    title,
+    body: bodyText,
+    author_name: authorName,
+    author_nim: authorNim,
+    author_email: authorEmail,
+    is_anonymous: isAnonymous,
+    category_id: categoryId,
+    ip_address: ip,
+  })
 
   return c.json(
     { success: true, message: 'Pertanyaan terkirim! Menunggu moderasi pengurus.' },

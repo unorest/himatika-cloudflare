@@ -221,16 +221,20 @@
           this.submitting = true;
           try {
             const payload = {
+              title: this.form.judul,
               judul: this.form.judul,
+              body: this.form.isi,
               isi: this.form.isi,
-              kategori: this.form.kategori,
-              anonim: this.form.anonim,
+              category_id: null,
+              is_anonymous: Boolean(this.form.anonim),
+              anonim: Boolean(this.form.anonim),
+              author_name: this.form.anonim ? 'Anonim' : this.form.nama,
+              nama: this.form.anonim ? 'Anonim' : this.form.nama,
+              author_nim: this.form.nim || undefined,
+              nim: this.form.nim || undefined,
+              author_email: this.form.email || undefined,
+              email: this.form.email || undefined,
             };
-            if (!this.form.anonim) {
-              payload.nama = this.form.nama;
-              if (this.form.nim) payload.nim = this.form.nim;
-            }
-            if (this.form.email) payload.email = this.form.email;
 
             await api.post('/forum/tanya', payload);
             this.success = true;
