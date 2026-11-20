@@ -25,6 +25,13 @@ export async function findUserByEmail(db: D1Database, email: string) {
     .first<User>()
 }
 
+export async function findUserByEmailOrNim(db: D1Database, identifier: string) {
+  return db
+    .prepare(`SELECT * FROM hmt_users WHERE (email = ? OR nim = ?) AND deleted_at IS NULL`)
+    .bind(identifier, identifier)
+    .first<User>()
+}
+
 export async function findUserById(db: D1Database, id: number) {
   return db
     .prepare(`SELECT * FROM hmt_users WHERE id = ? AND deleted_at IS NULL`)

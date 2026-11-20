@@ -2,29 +2,30 @@
 // Pengganti AuthController.php
 
 import { Hono } from 'hono'
-import { findUserByEmail, updateLastLogin } from '../../models/user.model'
+import { findUserByEmail, findUserByEmailOrNim, updateLastLogin } from '../../models/user.model'
 import { verifyPassword, signToken, setTokenCookie, clearTokenCookie } from '../../lib/auth'
 import type { Env, Variables } from '../../types/env'
 
 export const authRouter = new Hono<{ Bindings: Env; Variables: Variables }>()
 
-// POST /admin/login
+// POST /admin/login (Support login via Email atau NIM)
 authRouter.post('/login', async (c) => {
-  const body = await c.req.json<{ email: string; password: string }>()
+  const body = await c.req.json<{ email?: string; nim?: string; identifier?: string; password?: string }>()
+  const identifier = (body.identifier || body.email || body.nim || '').trim()
 
-  if (!body.email || !body.password) {
-    return c.json({ success: false, message: 'Email dan password wajib diisi' }, 422)
+  if (!identifier || !body.password) {
+    return c.json({ success: false, message: 'Email/NIM dan kata sandi wajib diisi' }, 422)
   }
 
-  const user = await findUserByEmail(c.env.DB, body.email)
+  const user = await findUserByEmailOrNim(c.env.DB, identifier)
 
   if (!user || user.is_active === 0) {
-    return c.json({ success: false, message: 'Email atau password salah' }, 401)
+    return c.json({ success: false, message: 'Email/NIM atau kata sandi tidak sesuai' }, 401)
   }
 
   const valid = await verifyPassword(body.password, user.password)
   if (!valid) {
-    return c.json({ success: false, message: 'Email atau password salah' }, 401)
+    return c.json({ success: false, message: 'Email/NIM atau kata sandi tidak sesuai' }, 401)
   }
 
   await updateLastLogin(c.env.DB, user.id)

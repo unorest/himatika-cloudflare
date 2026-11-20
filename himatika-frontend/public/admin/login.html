@@ -25,7 +25,7 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-lg font-bold text-gray-900">Masuk Akun</h2>
-          <p class="text-xs text-gray-500">Silakan masukkan email dan kata sandi Anda</p>
+          <p class="text-xs text-gray-500">Gunakan Email atau NIM terdaftar</p>
         </div>
         <!-- Status Server API -->
         <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
@@ -44,14 +44,14 @@
       </div>
 
       <form @submit.prevent="login" class="space-y-4">
-        <!-- Email Input -->
+        <!-- Email / NIM Input -->
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1.5">Alamat Email</label>
+          <label class="block text-xs font-semibold text-gray-700 mb-1.5">Email atau NIM</label>
           <div class="relative">
             <input
-              type="email"
-              x-model="form.email"
-              placeholder="admin@himatika.ac.id"
+              type="text"
+              x-model="form.identifier"
+              placeholder="rabiah@himatika.org / 240401010065"
               required
               class="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
             />
@@ -65,7 +65,7 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-xs font-semibold text-gray-700">Kata Sandi</label>
-            <a href="#" class="text-[11px] text-blue-600 hover:text-blue-700 font-medium">Lupa sandi?</a>
+            <span class="text-[11px] text-gray-400">Default: <span class="font-mono font-medium text-gray-600">admin123</span></span>
           </div>
           <div class="relative">
             <input
@@ -112,18 +112,16 @@
         </button>
       </form>
 
-      <!-- Demo Account Shortcut -->
+      <!-- Quick Pengurus Picker -->
       <div class="mt-6 pt-5 border-t border-gray-100">
-        <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
-          <span>Akun Demo Cepat:</span>
-          <button @click="fillDemo('admin')" class="text-blue-600 hover:text-blue-800 font-semibold text-[11px] hover:underline">
-            Gunakan Akun Admin
-          </button>
-        </div>
-        <div class="p-3 bg-gray-50 rounded-xl text-[11px] text-gray-600 space-y-1 font-mono">
-          <div>Email: <span class="text-gray-900 font-semibold">admin@himatika.ac.id</span></div>
-          <div>Sandi: <span class="text-gray-900 font-semibold">admin123</span></div>
-        </div>
+        <button
+          type="button"
+          @click="showModalPengurus = true"
+          class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100/80 text-blue-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 border border-blue-200"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          📋 Pilih dari 21 Akun Pengurus
+        </button>
       </div>
     </div>
 
@@ -135,26 +133,125 @@
       </a>
       <span>© 2025 HIMATIKA</span>
     </div>
+
+    <!-- Modal Daftar 21 Pengurus -->
+    <div x-show="showModalPengurus" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" x-cloak>
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden animate-fade-in" @click.away="showModalPengurus = false">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-gray-800 text-sm">Daftar Akun Pengurus HIMATIKA</h3>
+            <p class="text-[11px] text-gray-500">Pilih salah satu pengurus untuk otomatis mengisi form login</p>
+          </div>
+          <button @click="showModalPengurus = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+          <template x-for="divisi in listDivisi" :key="divisi.nama">
+            <div>
+              <div class="font-bold text-blue-700 bg-blue-50/80 px-3 py-1.5 rounded-lg mb-2 flex items-center justify-between">
+                <span x-text="divisi.nama"></span>
+                <span class="text-[10px] text-blue-500 font-normal" x-text="divisi.anggota.length + ' Orang'"></span>
+              </div>
+              <div class="space-y-1.5">
+                <template x-for="p in divisi.anggota" :key="p.email">
+                  <div
+                    @click="pilihAkun(p)"
+                    class="p-2.5 rounded-xl border border-gray-100 hover:border-blue-300 hover:bg-blue-50/50 cursor-pointer transition flex items-center justify-between"
+                  >
+                    <div>
+                      <div class="font-semibold text-gray-800" x-text="p.nama"></div>
+                      <div class="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5">
+                        <span x-text="p.jabatan" class="text-blue-600 font-medium"></span>
+                        <span>•</span>
+                        <span class="font-mono" x-text="p.nim"></span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
+                            :class="p.role === 'admin' ? 'bg-purple-100 text-purple-700' : (p.role === 'kadiv' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600')"
+                            x-text="p.role"></span>
+                      <div class="text-[10px] text-blue-600 mt-1 font-medium">Pilih Akun →</div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="p-3 border-t border-gray-100 bg-gray-50 text-right">
+          <button @click="showModalPengurus = false" class="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-xs font-medium">Tutup</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     function loginApp() {
       return {
-        form: { email: '', password: '' },
+        form: { identifier: 'rabiah@himatika.org', password: 'admin123' },
         loading: false,
         error: '',
         showPass: false,
         rememberMe: true,
         apiOnline: false,
+        showModalPengurus: false,
+
+        listDivisi: [
+          {
+            nama: 'Badan Pengurus Harian (BPH)',
+            anggota: [
+              { nama: 'Rabiah Al-Adawiyah', jabatan: 'Ketua', role: 'admin', email: 'rabiah@himatika.org', nim: '240401010065' },
+              { nama: 'Samuel Binsar Aditya Simamora', jabatan: 'Wakil Ketua', role: 'admin', email: 'samuel@himatika.org', nim: '240401010275' },
+              { nama: 'Vina Lestari', jabatan: 'Sekretaris 1', role: 'staff', email: 'vina@himatika.org', nim: '240401010385' },
+              { nama: 'Nadin Nadilah', jabatan: 'Sekretaris 2', role: 'staff', email: 'nadin@himatika.org', nim: '260401071001' },
+              { nama: 'Dian Avila', jabatan: 'Bendahara', role: 'staff', email: 'dian@himatika.org', nim: '250401010377' },
+            ]
+          },
+          {
+            nama: 'Divisi Stupport',
+            anggota: [
+              { nama: 'M. Rendy Amril', jabatan: 'Ketua Stupport', role: 'kadiv', email: 'rendy@himatika.org', nim: '240401010288' },
+              { nama: 'Hikmah Indriyani', jabatan: 'Anggota Stupport', role: 'staff', email: 'hikmah@himatika.org', nim: '250401010395' },
+              { nama: 'M. Naufal Adzim Ramadhan', jabatan: 'Anggota Stupport', role: 'staff', email: 'naufal@himatika.org', nim: '260401630042' },
+              { nama: 'Linawati', jabatan: 'Anggota Stupport', role: 'staff', email: 'linawati@himatika.org', nim: '260401010228' },
+            ]
+          },
+          {
+            nama: 'Divisi PDD',
+            anggota: [
+              { nama: 'Intan Puji Hirdian', jabatan: 'Ketua PDD', role: 'kadiv', email: 'intan@himatika.org', nim: '250401010210' },
+              { nama: 'Ratu Bilqis Mantika RO', jabatan: 'Anggota PDD', role: 'staff', email: 'balqis@himatika.org', nim: '240401020203' },
+              { nama: 'Triyas Apritantina', jabatan: 'Anggota PDD', role: 'staff', email: 'triyas@himatika.org', nim: '260401010208' },
+            ]
+          },
+          {
+            nama: 'Divisi PSDM',
+            anggota: [
+              { nama: 'Cut Evelyn Anwar', jabatan: 'Ketua PSDM', role: 'kadiv', email: 'cut.evelyn@himatika.org', nim: '250401010442' },
+              { nama: 'Arsita Rahmawati Dewi', jabatan: 'Anggota PSDM', role: 'staff', email: 'arsita@himatika.org', nim: '240401010318' },
+              { nama: 'M. Dzaky Ghaly Ramdhani', jabatan: 'Anggota PSDM', role: 'staff', email: 'dzaky@himatika.org', nim: '260401010316' },
+              { nama: 'Johan Sudanta Hla', jabatan: 'Anggota PSDM', role: 'staff', email: 'johan@himatika.org', nim: '260401630027' },
+              { nama: 'Risma Diah Wulandari', jabatan: 'Anggota PSDM', role: 'staff', email: 'risma@himatika.org', nim: '260401010315' },
+            ]
+          },
+          {
+            nama: 'Divisi Intellogy',
+            anggota: [
+              { nama: 'Raden Dimas Taufik Rahmat', jabatan: 'Ketua Intellogy', role: 'kadiv', email: 'dimas@himatika.org', nim: '250401010460' },
+              { nama: 'Fajar Mauludin', jabatan: 'Anggota Intellogy', role: 'staff', email: 'fajar@himatika.org', nim: '260401010227' },
+              { nama: 'Mochammad Wahyu R', jabatan: 'Anggota Intellogy', role: 'staff', email: 'wahyu@himatika.org', nim: '260401630016' },
+              { nama: 'Chandra Handika', jabatan: 'Anggota Intellogy', role: 'staff', email: 'chandra@himatika.org', nim: '260401010340' },
+            ]
+          }
+        ],
 
         async init() {
-          // Jika sudah punya token, langsung ke dashboard
           if (localStorage.getItem('hmt_token')) {
             window.location.href = '/admin/dashboard.html';
             return;
           }
 
-          // Cek koneksi ke Worker API
           try {
             const base = typeof getApiBase === 'function' ? getApiBase() : (window.API_BASE || 'http://localhost:8787');
             const res = await fetch(`${base}/`);
@@ -164,11 +261,10 @@
           }
         },
 
-        fillDemo(role) {
-          if (role === 'admin') {
-            this.form.email = 'admin@himatika.ac.id';
-            this.form.password = 'admin123';
-          }
+        pilihAkun(p) {
+          this.form.identifier = p.email;
+          this.form.password = 'admin123';
+          this.showModalPengurus = false;
         },
 
         async login() {
@@ -180,17 +276,21 @@
             const res = await fetch(`${base}/admin/auth/login`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(this.form),
+              body: JSON.stringify({
+                identifier: this.form.identifier,
+                email: this.form.identifier,
+                nim: this.form.identifier,
+                password: this.form.password,
+              }),
             });
 
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-              this.error = data.message || 'Email atau kata sandi tidak sesuai.';
+              this.error = data.message || 'Email/NIM atau kata sandi tidak sesuai.';
               return;
             }
 
-            // Ambil token dan data user
             const payload = data.data || data;
             const token = payload.token || data.token;
             const user = payload.user || data.user;
