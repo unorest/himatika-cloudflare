@@ -20,7 +20,7 @@ const app = new Hono<{ Bindings: Env; Variables: Variables }>()
 app.use('*', logger())
 app.use('*', prettyJSON())
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'https://himatika.pages.dev'],
+  origin: (origin) => origin || '*',
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
